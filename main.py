@@ -1,3 +1,4 @@
+
 import argparse
 import sys
 import numpy as np
@@ -10,6 +11,7 @@ class FixedRouteSuggestion:
         self.fixed_stations = []
         self.suggested_stations = []
 
+    # method to get arguments
     @staticmethod
     def parse_args():
 
@@ -18,6 +20,7 @@ class FixedRouteSuggestion:
         parser.add_argument('-o', '--output_file', help='Output File')
         return parser.parse_args()
 
+    # method to read input file and store the stations in a list of dictionaries
     def read_input(self, input_file):
 
         try:
@@ -39,14 +42,18 @@ class FixedRouteSuggestion:
         except Exception as e:
             logging.error("Error in file reading [{0}] at line [{1}]".format(e, sys.exc_info()[2].tb_lineno))
 
+    # method to find closest station, it return the name of closest station
     def find_closest_station(self, suggested_station_coordinates):
 
         deltas = self.fixed_station_coordinates_numpy - suggested_station_coordinates
+
+        # np.einsum increases speed as compared to other
         min_distance = np.einsum('ij,ij->i', deltas, deltas)
         closest_station_index = np.argmin(min_distance)
         closest_station = self.fixed_stations[closest_station_index]['station']
         return closest_station
 
+    # main method
     def run(self):
         args = self.parse_args()
         input_file = args.input_file
@@ -59,7 +66,9 @@ class FixedRouteSuggestion:
             output_file = input_file.replace(".txt", "_output.txt")
 
         self.read_input(input_file)
+        # using list comprehension to make a new list containing only coordinates of stations
         self.fixed_stations_coordinates = [x['coordinates'] for x in self.fixed_stations]
+        # converting the list of coordinates into a numpy array for futher processing
         self.fixed_station_coordinates_numpy = np.asarray(self.fixed_stations_coordinates)
 
         try:
