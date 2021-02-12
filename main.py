@@ -47,7 +47,7 @@ class FixedRouteSuggestion:
 
         deltas = self.fixed_station_coordinates_numpy - suggested_station_coordinates
 
-        # np.einsum increases speed as compared to other
+        # np.einsum increases speed as compared to other functions
         min_distance = np.einsum('ij,ij->i', deltas, deltas)
         closest_station_index = np.argmin(min_distance)
         closest_station = self.fixed_stations[closest_station_index]['station']
